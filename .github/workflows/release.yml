@@ -67,6 +67,7 @@ jobs:
         ls -l 
 
         mkdir -p ${{ github.workspace }}/release
+        cp -p ~/dist/osm_to_xplane.lin.zip ${{ github.workspace }}/release
 
     - name: Upload Linux Build Artifact
       uses: actions/upload-artifact@v4
@@ -80,6 +81,8 @@ jobs:
       run: |
         ## List
         ls -l
+        ls -l release
+        
         
 
     
