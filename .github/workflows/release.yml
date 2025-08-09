@@ -49,8 +49,11 @@ jobs:
 
         which pyinstaller
         
-        echo -e "Calling PyInstaller"
-        pyinstaller --clean --noconfirm osm_to_xplane.py
+        echo -e "Calling PyInstaller Wrapper"
+        ./proj_build.sh
+        
+        # echo -e "Calling PyInstaller"
+        # pyinstaller --clean --noconfirm osm_to_xplane.py
 
         # Check dist folder and list all files in it
         find dist
