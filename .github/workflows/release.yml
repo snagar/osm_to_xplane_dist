@@ -49,6 +49,7 @@ jobs:
             TARGET_BRANCH="release"
           fi
 
+          echo "\nglobal-tag-type=$TARGET_BRANCH\n"
           echo "global-tag-type=\"$TARGET_BRANCH\"" >> "$GITHUB_OUTPUT"
           
 
