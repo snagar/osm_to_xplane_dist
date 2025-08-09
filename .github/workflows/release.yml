@@ -92,7 +92,7 @@ jobs:
             
   build:
     runs-on: ubuntu-22.04
-    if: ( 1 == 2 )
+    # if: ( 1 == 2 )
     needs: [ build-lin ]
     # needs: [ pre-build, build-win, build-osx, build-lin ]
     # Steps to download artifact and combine to final build
@@ -152,7 +152,8 @@ jobs:
             
             # Internal use, Adding version tag, so we know which binary version is it.
             echo -e "\n> github.ref_name: ${{ github.ref_name }} \n"
-            echo "${{ github.ref_name }}" > ${{ steps.strings.outputs.build-output-dir }}/build.log
+            # echo "${{ github.ref_name }}" > ${{ steps.strings.outputs.build-output-dir }}/build.log
+            echo "${{ github.ref_name }}" > release/build.log
 
             echo -e "Configuring git before pushing branch '${TARGET_BRANCH}' ."
             git config --global user.email "snagar.dev@protonmail.com"
