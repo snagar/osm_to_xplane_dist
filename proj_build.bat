@@ -1,10 +1,10 @@
 @REM ## Step 1: pack the project
 echo "Packing Python Project"
-echo " "
+echo 
 pyinstaller --clean --noconfirm osm_to_xplane.py
 
 @REM ## Step 2: Copy the needed files into the project
-echo " "
+echo 
 echo "Post Pack - Copying the missing files"
 
 @REM # Copy mandatory files
@@ -19,3 +19,6 @@ xcopy /EY  tools dist\\osm_to_xplane\\tools\\
 xcopy /EY  blender dist\\osm_to_xplane\\blender\\
 xcopy /EY  textures dist\\osm_to_xplane\\textures\\
 
+dir
+
+exit 0
