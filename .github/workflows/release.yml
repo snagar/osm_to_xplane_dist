@@ -31,6 +31,8 @@ jobs:
         python -m pip install -U pyinstaller
         python -m pip install -U requests
 
+        sudo apt install zip
+        
         # Consider using urllib3 library instead of requests.
         # pip install flake8 pytest
         # if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
@@ -49,16 +51,40 @@ jobs:
 
         which pyinstaller
         
-        echo -e "Calling PyInstaller Wrapper"
+        echo -e "> Calling PyInstaller Wrapper"
         ./proj_build.sh
         
-        # echo -e "Calling PyInstaller"
+        # echo -e "> Calling PyInstaller"
         # pyinstaller --clean --noconfirm osm_to_xplane.py
 
         # Check dist folder and list all files in it
         find dist
+
+        echo -e "\n\n> Change directory to build folder:\n\n"
+        cd dist
+        zip -6 "osm_to_xplane.lin.zip" "osm_to_xplane"
+
+        ls -l 
+
+        mkdir -p ${{ github.workspace }}/release
+
+    - name: Upload Linux Build Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-lin-${{ matrix.build_type }}
+        path: |          
+          ${{ github.workspace }}/release/*
+
+
+    - name: Post build folder test
+      run: |
+        ## List
+        ls -l
         
 
+    
+            
 
+        
 
 
