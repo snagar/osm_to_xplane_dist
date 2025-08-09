@@ -193,11 +193,9 @@ jobs:
       run: |
         dir dist
         
-        md ${{ github.workspace }}/release
-        
-        copy /B /Y dist\*.zip ${{ github.workspace }}\release\
-
-        tree  ${{ github.workspace }}/release /F /A
+        md "${{ github.workspace }}\release"
+        copy /B /Y "${{ github.workspace }}\dist\*.zip" "${{ github.workspace }}\release\"
+        tree  ${{ github.workspace }}\release /F /A
         
     - name: Upload Windows Build Artifact
       uses: actions/upload-artifact@v4
