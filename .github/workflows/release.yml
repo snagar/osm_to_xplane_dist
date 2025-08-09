@@ -177,19 +177,19 @@ jobs:
         
         echo "> Calling PyInstaller Wrapper"
         proj_build.bat
-        
-        REM Check dist folder and list all files in it
-        dir dist
 
-        echo "\n\n> Change directory to build folder:\n\n"
-        cd dist
-        zip -6 "osm_to_xplane.win.zip" "osm_to_xplane"
-
-        REM Check dist folder and list all files in it
-        echo "> Running tee /F"
+    - name: Post PyInstaller
+      shell: powershell
+      run: |
+        Write-Host "> Running tee /F"
         tree /F /A
+                
+        Write-Host "\n\n> Change directory to build folder and Compress:\n\n"
+        cd dist
+        # zip -6 "osm_to_xplane.win.zip" "osm_to_xplane"
+        Compress-Archive -Path "osm_to_xplane" -DestinationPath "osm_to_xplane.win.zip"
 
-        echo "> Running dir"
+        Write-Host "> Running dir"
         dir
 
         md ${{ github.workspace }}/release
@@ -197,9 +197,9 @@ jobs:
         
         dir 
         
-        REM cp -p ${{ github.workspace }}/dist/osm_to_xplane.lin.zip ${{ github.workspace }}/release        
+        # REM cp -p ${{ github.workspace }}/dist/osm_to_xplane.lin.zip ${{ github.workspace }}/release        
 
-        echo "End of Pack using PyInstaller"
+        Write-Host "End Post PyInstaller"
 
     
 
