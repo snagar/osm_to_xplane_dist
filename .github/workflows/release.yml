@@ -87,7 +87,47 @@ jobs:
 
     
             
-
+  build:
+    runs-on: ubuntu-22.04
+    # if: ( 1 == 2 )
+    needs: [ build-lin ]
+    # needs: [ pre-build, build-win, build-osx, build-lin ]
+    # Steps to download artifact and combine to final build
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
         
+      - name: Set build reusable strings
+        # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
+        id: strings
+        shell: bash
+        run: |
+          echo "build-output-dir=${{ github.workspace }}/release" >> "$GITHUB_OUTPUT"
+          echo "utility-name=osm_to_xplane" >> "$GITHUB_OUTPUT"
+          echo "OS Build: ${{ matrix.os }}"
 
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./download
+
+      - name: Prepare release folder
+        shell: bash
+        run: |
+          echo -e "Display download folder content"
+          ls -ltR ./download
+          
+          echo -e "\n\nCreate the build folder\n"
+          mkdir -p ${{ steps.strings.outputs.build-output-dir }}
+          echo -e "\n\nDisplay build folders before copy task:\n\n"
+          ls -ltR ${{ steps.strings.outputs.build-output-dir }}
+          
+          echo "copy folders"
+          cp -rdp ./download/*.zip ${{ steps.strings.outputs.build-output-dir }}
+          
+          echo -e "\n\nDisplay files after folders were coppied:\n\n"
+          ls -ltR ${{ steps.strings.outputs.build-output-dir }}
+          
+          rm -rf ./download
 
