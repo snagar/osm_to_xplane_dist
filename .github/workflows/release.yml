@@ -92,6 +92,8 @@ jobs:
             
   build:
     runs-on: ubuntu-22.04
+    permissions:
+      contents: write
     # if: ( 1 == 2 )
     needs: [ build-lin ]
     # needs: [ pre-build, build-win, build-osx, build-lin ]
