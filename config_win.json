@@ -1,0 +1,202 @@
+{
+  /////////////////////////////////////
+  //// SCRIPT MODE
+  /////////////////////////////////////
+  // The script can now do few type of actions, related to X-Plane scenery.
+  // Each type is represented as a different mode.
+  // Mode list:
+  // "obj" or "": default mode, creates 3D meshes based on OSM data, check OVERPASS FILTERS topic below.
+  // "helipad"  : Will create a custom "apt.dat" that will hold helipad information. Check OVERPASS FILTERS topic below.
+  //              As of this build you will have to merge the data with existing scenery folder
+  //              When exporting the scenery using WED, it will write the data into "Earth nav data/apt.dat" file.
+  //  "mode": "obj",
+  //  "mode": "helipad",
+
+
+  /////////////////////////////////////
+  //// DATA RELATED
+  /////////////////////////////////////
+
+  // Optional if defined "osm_json_file". "osm_bbox" coordinates: "left, bottom, right, top" or "[lat_left, lon_bottom], [lat_right, lon_top]"
+  // Creates a filtered area to run the script search command.
+  // "osm_bbox": "left, bottom, top, right",
+  // KSEA area example
+  // "osm_bbox": "47.3870685,-122.3697687,47.4855916,-122.2609604",
+  "osm_bbox": "43.5914883,1.2901760,43.6597514,1.4202706",
+
+  // Instead of "osm_bbox" you can provide a valid OVERPASS json output as a file.
+  // It has precedence over the "bbox" parameter.
+  // Remember, all osm_bbox results are written to "overpass.json" file so you can always use it after the first run.
+  //"osm_json_file": "overpass.json",
+
+  // In which folder, you want the output to be in.
+  // Default is to the ".\out" subfolder, which is relative to the main python script.
+  "script_work_folder": "C:\\temp\\test01",
+
+  // blender binaries
+  //"blender_bin": "G:\\Program Files\\blender-3.6.5-windows-x64\\blender.exe",
+  "blender_bin": "C:\\tools\\Blender\\blender-4.5.1-windows-x64\\blender.exe",
+
+  // Limit: how many "way_id" to translate to obj8 files.
+  // It counts all buildings, processed and skipped alike. Resize the limit accordingly.
+  "limit": 1,
+
+  /////////////////////////////////////////
+  //// OVERPASS FILTERS             ///////
+  /////////////////////////////////////////
+
+  // OSM query filter for buildings
+  "mode_obj_filter_text": "[out:json];way ['building'] ({{bbox}});(._;>;);out body;",
+
+  // OSM query filter for helipads
+  "mode_helipad_filter_text": "[out:json];( nw['aeroway'='helipad'][!'length']({{bbox}});(._;>;); );out body;",
+
+  // SQLite, custom metadata filter when fetching from the database. The idea is to filter out unneeded rows
+  // This could be useful when working with the uv_xml_config.xml,
+  // when special conditions, related to the metadata, are in-place.
+  //
+  // The query must have the template: "and ( k... or k... )" or the query will be invalidated
+  // valid fields are: k and v (k=key and v=value). All values are text based.
+  "query_meta_text": "and ( k like 'build%' or k = 'amenity' or k='height' )",
+
+  // OVERPASS height metadata
+  // Define list of metadata "[keys]" that represent "height" and "levels" in the "ways_meta" table
+  // the "key":"building:levels" is already being used but there might be other "keys" that represents the same.
+  // You can add more "key" names to the list. Example: ["height", "key2", "key3"...]
+  "height_keys_list": ["height"],
+  "level_keys_list": ["building:levels"],
+
+
+  // OVERPASS URL - https://wiki.openstreetmap.org/wiki/Overpass_API
+  // Here is a list of overpass URL that worked as of this writing
+  // https://overpass.kumi.systems/api/interpreter
+  // https://overpass-api.de/api/interpreter
+  // https://lz4.overpass-api.de/api/interpreter
+  // https://overpass.osm.jp/api/interpreter
+  // https://maps.mail.ru/osm/tools/overpass/api/interpreter
+  // https://z.overpass-api.de/api/interpreter
+  // https://overpass.osm.ch/api/interpreter
+  // https://overpass.private.coffee/api/interpreter
+  "overpass_url": "https://overpass.kumi.systems/api/interpreter",
+
+
+  /////////////////////////////////////
+  //// CUSTOM SCENERY RELATED SETTINGS
+  /////////////////////////////////////
+
+  // "Custom Scenery" root folder
+  // Comment out or provide an "Empty" value to ignore this action and its dependent ones too.
+  // "root_scenery_folder_to_copy_obj8_files": "{root X-Plane folder}/Custom Scenery/{Scenery Folder}",
+  "root_scenery_folder_to_copy_obj8_files": "c:\\XP12\\Custom Scenery\\mx_test_osm",
+
+  // Where the OBJ8 files are located relative to the Scenery folder
+  // "root_scenery_folder_to_copy_obj8_files" + "lib_relative_path"
+  // Will be used with the DSFTool too
+  "lib_relative_path": "objects\\osm",
+
+  // Where the textures of the ".OBJ8" files are placed relative to it. this is also the base texture for blender.
+  // The folder you define here will be used for the "python" script and for the obj8 files in "Custom Scenery".
+  // Make sure you create the folder in both locations, 1. relative to the .py script and as a sub folder of the "lib_relative_path"
+  // "blend_base_texture_name":"textures/checker_2K.png",
+  "blend_base_texture_name": "textures/texture_2K.png",
+
+  // Where to write the "dsf text" file. Script also assumes that DSFTool is located in the same folder
+  // This will add all ".obj" files from the "obj_files.txt" to the "dsf_obj8.txt" file to use with DSFTool or other tool.
+  // Empty value means same folder as the main script
+  "output_folder_for_the_dsf_text": "tools",
+
+
+
+
+  /////////////////////////////////////
+  //// SKIP RULES             ///////
+  // In case of resuming a failed job, or you changed the limit for the same work you already done
+  // You can define in which stage you want the script to test:
+  //  - if the final obj8 "mesh" file exists and
+  //  - if the file size is at least 500 bytes
+  //  then it will skip the rest of the code.
+  // Rules values are:
+  // commented out or Empty value, means process all files
+  // 5: "osm_to_wavefront" : This is the first step were we create the base mesh, if we find a "{file}_osm_obj8.obj" present, we will skip the obj creation, since the file was already processed to obj8
+  // 10: "pre-blender": Test the "{file}_osm_obj8.obj" existence, before calling blender. Meaning, we want to create the "wavefront" obj file, maybe for tests/debug purposes.
+  // In 99% of cases, you should use the first option: 5, since it will immediatelly figure out the "final" file and will skip most of the work for it.
+  //  "skip_rule": 5,
+
+  // Filter houses by their max wall length.
+  // If undefined then it will not filter by wall length.
+  //"max_wall_length":70,
+
+  // Filter houses by their perimeter length (all walls). Minimum 10 meters, default is 250 meters
+  // "filter_out_obj_with_perimeter_greater_than": 1500,
+
+  // Filter buildings with perimeter less than
+  // "filter_out_obj_with_perimeter_less_than": 500,
+
+  // Fetch buildings between perimeter lengths, list value, example [low,high]
+  // "filter_in_obj_with_perimeter_between": [150,500],
+
+  // Filter out every Nth house mesh. Valid values 3..10
+  // "filter_out_every_nth_mesh": 3,
+
+
+  /////////////////////
+  //// DEBUG DEBUG ///
+  ///////////////////
+
+  // If you need to debug one or more way_id that are already present in the database, enter them as a list
+  // "debug_way_id":[584793482], // Complex house
+  // "debug_way_id":[477332480],
+
+  ///////////////
+  /// SQLITE ///
+  /////////////
+
+  // In some OSes like Windows the "sqlite" module is not compiled with "math" support, by default.
+  // To overcome this, uncomment the next line, so the python script will do the math calculations instead.
+  //"sqlite_support_math": false,
+
+
+
+  //////////////////
+  /// BLENDER
+  /////////////////
+
+  // Should we create the intermidiate "WaveFront" obj file after vertex normal calculation ?
+  "blend_export_vn_file": false,
+
+  // Blender script parameters
+  "blend_save_project": true,
+
+  // Dependent on the "blend_save_project" option, if set to "true". Do you want to export the final object in OBJ8 format ?
+  "blend_export_xplane_obj8": true,
+
+  // Debug option: Should we load the texture while manipulating the UV.
+  // This is good for debug purpuses, default should be commented out
+  "blend_load_texture": true,
+
+
+  // XML file name that describes how to divide the texture based on max edge length
+  "blend_uv_xml_config_file": "uv_xml_config.xml",
+
+  // Strongly suggest to not use this workflow flag.
+  // Uncomment this flag if you want to use the sqlite code flow
+  // Default is false, which means 1 obj8 file for each mesh.
+  // So far using this technique did not resolve with better 3D mesh representation.
+  // Was not tested with the latest code.
+  // "use_sqlite_flow":"true",
+
+  // Add bevel to roofs with more than 4 edges. Default is "false".
+  "add_bevel":true,
+
+  //////////////////
+  /// Script Relate
+  /////////////////
+
+  // Please do not change the following settings unless you understand their impact.
+  // If you are working with large areas, you may need to increase the Overpass ‘request timeout’ to avoid timeouts.
+  // Measured in seconds.
+  "request_timeout": 30,
+
+  // log folder location. default is "logs" at the same folder as the binary file.
+  "log_folder": "logs"
+}

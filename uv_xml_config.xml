@@ -1,0 +1,102 @@
+<texture_mapping>
+  <!-- The <index> map how we divide the sets into mesh edge lengths (in meters) -->
+  <index>{1:20,2:40,3:70}</index>
+  <index_meta>
+{
+1:{"amenity":["courthouse","police"]}
+,2:{"building":["apartments"], "building:levels":["2","3","4","5","6","7","8","9","10","11","12","13","14","15","16"] }
+,3:{"building":["mall","commercial"], "building:levels":["2","3","4","5","6","7"] }
+,4:{"building":["house"], "building:levels":["1", "2", "3"] }
+}
+
+  </index_meta>
+  <!-- In some cases you would want to decide how to fix the rotation of the "face mesh" "uv texture".
+       Options are: "top" or "wall", and the rotations are: "ccw,cw" (counter clock wize, or clock wise) -->
+  <uv_rotation_fix>{"top":"", "wall":"ccw"}</uv_rotation_fix>
+
+  <!-- The texture is divided as a ratio between 0 and 1 of the image. -->
+  <!-- It is easier if all your sub texture images would have  an images lengths in the power of 2. -->
+  <!-- Example: 256x128, 64x64 etc... -->
+  <!-- You will have to calculate their Bottom,Left and Top,Right as a ratio location on the image -->
+  <set index="1">
+    <!-- The probability to randomly use the first roof is 15 or 100 -->
+    <!-- Assume the texture is 2048x2048
+         The location of the roof in the texture: bottom,left (0.0x0.0)
+         and its length is 0.25 while the top is 1/8 of the image width/height respectively.
+         (0.0x0.0 / 512x256) -->
+    <roof weight="15">0.0,0.0,0.25,0.125</roof>
+    <roof weight="13">0.25,0.0,0.25,0.125</roof>
+    <roof weight="5">0.5,0.0,0.25,0.125</roof>
+    <roof weight="9">0.75,0.0,0.25,0.125</roof>
+    <roof weight="12">0.0,0.125,0.25,0.125</roof>
+    <roof weight="15">0.25,0.125,0.25,0.125</roof>
+
+    <wall weight="20">0.0,0.25,0.25,0.125</wall>
+    <wall weight="12">0.25,0.25,0.25,0.125</wall>
+    <wall weight="10">0.50,0.25,0.25,0.125</wall>
+    <wall weight="5">0.75,0.25,0.25,0.125</wall>
+    <wall weight="1">0.5,0.125,0.25,0.125</wall>
+    <wall weight="0">0.75,0.125,0.25,0.125</wall>
+    <wall_w_door weight="">0.0,0.375,0.25,0.125</wall_w_door>
+    <wall_w_win weight="">0.0,0.5,0.25,0.125</wall_w_win>
+  </set>
+
+  <set index="2">
+    <roof weight="15">0.0,0.875,0.0625,0.0625</roof>
+    <roof weight="9">0.0625,0.875,0.0625,0.0625</roof>
+    <roof weight="1">0.125,0.875,0.0625,0.0625</roof>
+    <roof weight="50">0.0,0.9375,0.0625,0.0625</roof>
+    <roof weight="25">0.0625,0.9375,0.0625,0.0625</roof>
+    <roof weight="10">0.125,0.9375,0.0625,0.0625</roof>
+
+    <wall weight="15">0.0,0.25,0.25,0.125</wall>
+    <wall weight="7">0.25,0.25,0.25,0.125</wall>
+    <wall weight="8">0.50,0.25,0.25,0.125</wall>
+    <wall weight="5">0.75,0.25,0.25,0.125</wall>
+    <wall weight="7">0.5,0.125,0.25,0.125</wall>
+    <wall weight="0">0.75,0.125,0.25,0.125</wall>
+    <wall_w_door weight="">0.0,0.375,0.25,0.125</wall_w_door>
+    <wall_w_win weight="">0.0,0.5,0.25,0.125</wall_w_win>
+  </set>
+
+  <set index="3">
+    <roof weight="15">0.0,0.875,0.0625,0.0625</roof>
+    <roof weight="9">0.0625,0.875,0.0625,0.0625</roof>
+    <roof weight="1">0.125,0.875,0.0625,0.0625</roof>
+    <roof weight="60">0.0,0.9375,0.0625,0.0625</roof>
+    <roof weight="25">0.0625,0.9375,0.0625,0.0625</roof>
+    <roof weight="10">0.125,0.9375,0.0625,0.0625</roof>
+
+    <wall weight="5">0.0,0.25,0.25,0.125</wall>
+    <wall weight="3">0.25,0.25,0.25,0.125</wall>
+    <wall weight="7">0.50,0.25,0.25,0.125</wall>
+    <wall weight="2">0.75,0.25,0.25,0.125</wall>
+    <wall weight="20">0.5,0.125,0.25,0.125</wall>
+    <wall weight="8">0.75,0.125,0.25,0.125</wall>
+    <wall_w_door weight="">0.0,0.375,0.25,0.125</wall_w_door>
+    <wall_w_win weight="">0.0,0.5,0.25,0.125</wall_w_win>
+  </set>
+
+
+  <set index="4">
+    <roof weight="15">0.0,0.875,0.0625,0.0625</roof>
+    <roof weight="9">0.0625,0.875,0.0625,0.0625</roof>
+    <roof weight="1">0.125,0.875,0.0625,0.0625</roof>
+    <roof weight="60">0.0,0.9375,0.0625,0.0625</roof>
+    <roof weight="25">0.0625,0.9375,0.0625,0.0625</roof>
+    <roof weight="10">0.125,0.9375,0.0625,0.0625</roof>
+
+    <wall weight="5">0.0,0.25,0.25,0.125</wall>
+    <wall weight="3">0.25,0.25,0.25,0.125</wall>
+    <wall weight="7">0.50,0.25,0.25,0.125</wall>
+    <wall weight="2">0.75,0.25,0.25,0.125</wall>
+    <wall weight="20">0.5,0.125,0.25,0.125</wall>
+    <wall weight="8">0.75,0.125,0.25,0.125</wall>
+    <wall_w_door weight="">0.0,0.375,0.25,0.125</wall_w_door>
+    <wall_w_win weight="">0.0,0.5,0.25,0.125</wall_w_win>
+  </set>
+
+
+
+</texture_mapping>
+
