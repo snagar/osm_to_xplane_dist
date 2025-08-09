@@ -192,8 +192,26 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          # Reuse the code from pre-build, since the "steps.strings.outputs.global-tag-type" does not being recognised.
+          TARGET_BRANCH="dry-run"
+          VERSION=${{ github.ref_name }}  # Could also used: ${GITHUB_REF##*/}
+          echo "\nCurrent TAG Version: ${VERSION}\n"
           
-          TARGET_BRANCH="${{ steps.strings.outputs.global-tag-type }}"
+          if [[ $VERSION == *"-test"* || $VERSION == t* ]] # if TAG contains -test or starts with "t"
+          then
+            echo "This is a just a build test"
+            TARGET_BRANCH="build-test"
+          elif [[ $VERSION == *"-beta"* || $VERSION == b* ]] # if TAG contains -beta or starts with "b"
+          then
+            echo "This is a beta release"
+            TARGET_BRANCH="beta"
+          elif [[ $VERSION == v* || $VERSION == *"-release"*  ]] # if TAG starts with "v" or contains -release
+          then
+            echo "This is a 'release'."
+            TARGET_BRANCH="release"
+          fi
+          
+          # TARGET_BRANCH="${{ steps.strings.outputs.global-tag-type }}"
           echo -e "\n\nTARGET_BRANCH: $TARGET_BRANCH\n\n"
 
           # TARGET_BRANCH="release"
@@ -202,7 +220,7 @@ jobs:
             cd "release"
 
             echo -e "Create the new branch: $TARGET_BRANCH"
-            git checkout -b ${TARGET_BRANCH}
+            git checkout -B ${TARGET_BRANCH}
             
             # Internal use, Adding version tag, so we know which binary version is it.
             echo -e "\n> github.ref_name: ${{ github.ref_name }} \n"
