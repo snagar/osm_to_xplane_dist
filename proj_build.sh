@@ -6,10 +6,10 @@ source .venv/bin/activate
 mkdir -p dist/osm_to_xplane/
 
 ## Step 1: pack the project
-echo -e "Packing Python Project\n"
+echo -e "\n\nPacking Python Project\n"
 
 if [ -z "$VIRTUAL_ENV_PROMPT" ]; then
-    echo "no value is set for $VIRTUAL_ENV_PROMPT"
+    echo -e "no value is set for environment variable: \$VIRTUAL_ENV_PROMPT\n"
     pyinstaller --clean --noconfirm osm_to_xplane.py
 else
     echo "VIRTUAL_ENV_PROMPT is set to: $VIRTUAL_ENV_PROMPT"
@@ -27,7 +27,9 @@ cp -p config*.json dist/osm_to_xplane/
 rm -f dist/osm_to_xplane/config.json
 cp -p uv_xml_config.xml dist/osm_to_xplane/
 cp -p dsf_template.tmpl dist/osm_to_xplane/
+
 # Copy folders and clean them
+echo -e "\nCopy folders and clean them.\n"
 cp -rp tools dist/osm_to_xplane
 rm -f  dist/osm_to_xplane/tools/dsf_obj8*
 
