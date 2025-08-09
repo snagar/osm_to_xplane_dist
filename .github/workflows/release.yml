@@ -207,3 +207,18 @@ jobs:
             echo -e "Could not find [release] directory."
             ls -l
           fi  
+
+
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v2
+        # if: ( startsWith(github.ref_name, 'v') || startsWith(github.ref_name, 'r') || startsWith(github.ref_name, 'b') || startsWith(github.ref_name, 't') || contains(github.ref_name, '-rel') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-test') )
+        with:
+          files: |
+            ${{ github.workspace }}/release/${{ steps.strings.outputs.plugin-name }}*zip*
+          prerelease: ${{ contains(github.ref_name, '-beta') || startsWith(github.ref_name, 'b') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
+
