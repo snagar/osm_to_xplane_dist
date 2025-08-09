@@ -156,7 +156,7 @@ jobs:
         shell: bash
         run: |
           echo "build-output-dir=${{ github.workspace }}/release" >> "$GITHUB_OUTPUT"
-          echo "global-tag-type: ${{ needs.pre-build.outputs.global-tag-type }} "
+          echo "global-tag-type: ${{ steps.strings.outputs.global-tag-type }} "
           echo "utility-name=osm_to_xplane" >> "$GITHUB_OUTPUT"
           
           echo "OS Build: ${{ matrix.os }}"
