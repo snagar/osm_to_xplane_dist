@@ -49,6 +49,8 @@ jobs:
         ## Create the destination folder
         mkdir -p dist/osm_to_xplane/
 
+        echo -e "\n\n> github.ref_name: ${{ github.ref_name }} \n\n"
+        
         which pyinstaller
         
         echo -e "> Calling PyInstaller Wrapper"
@@ -90,7 +92,7 @@ jobs:
             
   build:
     runs-on: ubuntu-22.04
-    # if: ( 1 == 2 )
+    if: ( 1 == 2 )
     needs: [ build-lin ]
     # needs: [ pre-build, build-win, build-osx, build-lin ]
     # Steps to download artifact and combine to final build
@@ -132,3 +134,67 @@ jobs:
           
           rm -rf ./download
 
+
+      - name: Prepare Release Branch
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          
+          # TARGET_BRANCH=" ${{ needs.pre-build.outputs.global-tag-type }}"
+          TARGET_BRANCH="release"
+          
+          if [ -d "release" ]; then
+            cd "release"
+
+            echo -e "Create the new branch: $TARGET_BRANCH"
+            git checkout -b ${TARGET_BRANCH}
+            
+            # Internal use, Adding version tag, so we know which binary version is it.
+            echo -e "\n> github.ref_name: ${{ github.ref_name }} \n"
+            echo "${{ github.ref_name }}" > ${{ steps.strings.outputs.build-output-dir }}/build.log
+
+            echo -e "Configuring git before pushing branch '${TARGET_BRANCH}' ."
+            git config --global user.email "snagar.dev@protonmail.com"
+            git config --global user.name "snagar"
+
+            echo -e "--- Display Branches ---"
+            git branch -a
+          
+            echo "--- display folders ---"
+            ls -lR
+            echo "-----"
+            echo "Adding files to branch: ${TARGET_BRANCH}"
+            git add .
+            echo -e "\n---- git status ---->"
+            git status
+            echo -e "\n<---------"
+
+
+            # Push the branch back.. or not
+            if [[ "$TARGET_BRANCH" != "dry-run" ]]; then
+          
+              if [[ "$TARGET_BRANCH" == "release" ]]; then
+                echo -e "Adding GH (Github Client) information."
+                gh ${TARGET_BRANCH} create "${{ github.ref_name }}" --title "$TARGET_BRANCH: ${{ github.ref_name }}" --notes-file ${{ github.workspace }}/notes.md
+              fi
+              echo -e "\nCommit branch ${TARGET_BRANCH}\n---------------------"
+              git commit -m "new ${TARGET_BRANCH} - ${{ github.ref_name }}"
+          
+              echo -e "github.actor: ${{ github.actor }},  github.repository: ${{ github.repository }}"
+              echo -e "\ngithub.ref - ${{ github.ref }} - ${{ github.ref_name }} \n"
+              git remote add authenticated-origin "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}"
+          
+              echo -e "\nPushing ${TARGET_BRANCH}\n---------------------"
+              git push authenticated-origin ${TARGET_BRANCH} --force
+          
+              echo -e "TARGET_BRANCH - ${TARGET_BRANCH}"
+              echo -e "\ngithub.ref - ${{ github.ref }}, name: ${{ github.ref_name }} \n"
+              git branch -a
+            else
+              echo "Will not push back the '$TARGET_BRANCH'. It is only a dry-run."
+            fi
+          else
+            echo -e "Could not find [release] directory."
+            ls -l
+          fi  
