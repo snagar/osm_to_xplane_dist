@@ -176,12 +176,11 @@ jobs:
             if [[ "$TARGET_BRANCH" != "dry-run" ]]; then
           
               if [[ "$TARGET_BRANCH" == "release" ]]; then
-                echo -e "Adding GH (Github Client) information."
-                # gh ${TARGET_BRANCH} create "${{ github.ref_name }}" --title "$TARGET_BRANCH: ${{ github.ref_name }}" --notes-file ${{ github.workspace }}/notes.md
-                gh ${TARGET_BRANCH} create "${{ github.ref_name }}" --title "$TARGET_BRANCH: ${{ github.ref_name }}"
-
+                ## Create target branch
+                git checkout -b ${TARGET_BRANCH}                
                 echo -e "After creating branch"
               fi
+              
               echo -e "\nCommit branch ${TARGET_BRANCH}\n---------------------"
               git commit -m "new ${TARGET_BRANCH} - ${{ github.ref_name }}"
           
