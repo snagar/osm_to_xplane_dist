@@ -15,10 +15,56 @@ permissions:
   contents: read
 
 jobs:
+
+  pre-build:
+    #if: ( 1 == 2 )
+    runs-on: ubuntu-latest
+    outputs:
+      global-tag-type: ${{ steps.strings.outputs.global-tag-type }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set global reusable strings
+        # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
+        id: strings
+        shell: bash
+        run: |
+          TARGET_BRANCH="dry-run"
+          VERSION=${{ github.ref_name }}  # Could also used: ${GITHUB_REF##*/}
+          echo "\nCurrent TAG Version: ${VERSION}\n"
+          
+          if [[ $VERSION == *"-test"* || $VERSION == t* ]] # if TAG contains -test or starts with "t"
+          then
+            echo "This is a just a build test"
+            TARGET_BRANCH="build-test"
+          elif [[ $VERSION == *"-beta"* || $VERSION == b* ]] # if TAG contains -beta or starts with "b"
+          then
+            echo "This is a beta release"
+            TARGET_BRANCH="beta"
+          elif [[ $VERSION == v* || $VERSION == *"-release"*  ]] # if TAG starts with "v" or contains -release
+          then
+            echo "This is a 'release'."
+            TARGET_BRANCH="release"
+          fi
+
+          echo "global-tag-type=\"$TARGET_BRANCH\"" >> "$GITHUB_OUTPUT"
+          
+
+      - name: Check Variable
+        shell: bash
+        run: |
+          echo -e "\nGlobal Variable value for 'global-tag-type' is: ${{ steps.strings.outputs.global-tag-type }} "
+          echo -e "\nGlobal Variable value for 'global-special-build_text' is: ${{ steps.strings.outputs.global-special-build_text }} "
+          echo -e "\nGlobal Variable value for 'global-subversion-text' is: ${{ steps.strings.outputs.global-subversion-text }} "
+
+          
+
   build-lin:
 
-    runs-on: ubuntu-22.04
-
+    runs-on: ubuntu-latest
+    needs: [ pre-build ]
     steps:
     - uses: actions/checkout@v4
     
@@ -93,7 +139,7 @@ jobs:
     
             
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     permissions:
       contents: write
     # if: ( 1 == 2 )
@@ -142,12 +188,13 @@ jobs:
 
 
       - name: Prepare Release Branch
+        if: ( startsWith(github.ref_name, 'v') || startsWith(github.ref_name, 'r') || startsWith(github.ref_name, 'b') || startsWith(github.ref_name, 't') || contains(github.ref_name, '-rel') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-test') )
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           
-          TARGET_BRANCH=" ${{ needs.pre-build.outputs.global-tag-type }}"
+          TARGET_BRANCH="${{ needs.pre-build.outputs.global-tag-type }}"
           echo -e "\n\nTARGET_BRANCH: $TARGET_BRANCH\n\n"
 
           # TARGET_BRANCH="release"
@@ -161,6 +208,8 @@ jobs:
             # Internal use, Adding version tag, so we know which binary version is it.
             echo -e "\n> github.ref_name: ${{ github.ref_name }} \n"
             # echo "${{ github.ref_name }}" > ${{ steps.strings.outputs.build-output-dir }}/build.log
+
+            echo "$github.ref_name = {{ github.ref_name }}\n"
             echo "${{ github.ref_name }}" > ${{ github.workspace }}/release/build.log
 
             echo -e "Configuring git before pushing branch '${TARGET_BRANCH}' ."
@@ -181,7 +230,7 @@ jobs:
 
 
             # Push the branch back.. or not
-            if [[ "$TARGET_BRANCH" != "dry-run" ]]; then
+            if [[ "$TARGET_BRANCH" != "dry-run" && "${#TARGET_BRANCH}" -gt 4 ]]; then
           
               if [[ "$TARGET_BRANCH" == "release" ]]; then
                 ## Create target branch
