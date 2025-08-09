@@ -177,7 +177,7 @@ jobs:
           
               if [[ "$TARGET_BRANCH" == "release" ]]; then
                 ## Create target branch
-                git checkout -b ${TARGET_BRANCH}                
+                git checkout -B ${TARGET_BRANCH}                
                 echo -e "After creating branch"
               fi
               
