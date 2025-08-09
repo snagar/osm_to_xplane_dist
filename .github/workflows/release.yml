@@ -109,7 +109,9 @@ jobs:
         shell: bash
         run: |
           echo "build-output-dir=${{ github.workspace }}/release" >> "$GITHUB_OUTPUT"
+          echo "global-tag-type: ${{ needs.pre-build.outputs.global-tag-type }} "
           echo "utility-name=osm_to_xplane" >> "$GITHUB_OUTPUT"
+          
           echo "OS Build: ${{ matrix.os }}"
 
       - name: Download Build Artifacts
@@ -143,8 +145,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           
-          # TARGET_BRANCH=" ${{ needs.pre-build.outputs.global-tag-type }}"
-          TARGET_BRANCH="release"
+          TARGET_BRANCH=" ${{ needs.pre-build.outputs.global-tag-type }}"
+          echo -e "\n\nTARGET_BRANCH: $TARGET_BRANCH\n\n"
+
+          # TARGET_BRANCH="release"
           
           if [ -d "release" ]; then
             cd "release"
@@ -212,7 +216,7 @@ jobs:
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v2
-        # if: ( startsWith(github.ref_name, 'v') || startsWith(github.ref_name, 'r') || startsWith(github.ref_name, 'b') || startsWith(github.ref_name, 't') || contains(github.ref_name, '-rel') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-test') )
+        if: ( startsWith(github.ref_name, 'v') || startsWith(github.ref_name, 'r') || startsWith(github.ref_name, 'b') || startsWith(github.ref_name, 't') || contains(github.ref_name, '-rel') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-test') )
         with:
           files: |
             ${{ github.workspace }}/release/${{ steps.strings.outputs.plugin-name }}*zip*
