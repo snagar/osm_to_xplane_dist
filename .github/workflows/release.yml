@@ -147,8 +147,7 @@ jobs:
       id: strings
       shell: bash
       run: |
-        echo "build-output-dir=${{ github.workspace }}\cmake_build" >> "$GITHUB_OUTPUT"
-        echo "target-folder=${{ github.workspace }}\release\win_x64" >> "$GITHUB_OUTPUT"
+        echo "target-folder=${{ github.workspace }}\release" >> "$GITHUB_OUTPUT"
         echo "plugin-name=osm_to_xplane" >> "$GITHUB_OUTPUT"
         echo "OS Build: ${{ matrix.os }}"
 
@@ -189,21 +188,26 @@ jobs:
         # zip -6 "osm_to_xplane.win.zip" "osm_to_xplane"
         Compress-Archive -Path "osm_to_xplane" -DestinationPath "osm_to_xplane.win.zip"
 
-        Write-Host "> Running dir"
-        dir
-
-        md ${{ github.workspace }}/release
-        cd ${{ github.workspace }}
-        
-        dir 
-        
-        # REM cp -p ${{ github.workspace }}/dist/osm_to_xplane.lin.zip ${{ github.workspace }}/release        
-
         Write-Host "End Post PyInstaller"
 
     
+    - name: Copy compressed folder into release folder
+      shell: cmd
+      run: |
+        md ${{ github.workspace }}/release
+        copy /B /Y dist\*.zip ${{ github.workspace }}/release/
 
-    
+        tree  ${{ github.workspace }}/release /F /A
+        
+    - name: Upload Windows Build Artifact
+      uses: actions/upload-artifact@v4
+      with:        
+        name: build-win
+        path: |          
+          ${{ github.workspace }}/release/*
+          
+
+            
             
   build:
     runs-on: ubuntu-latest
