@@ -169,24 +169,28 @@ jobs:
     - name: Pack using PyInstaller
       shell: cmd
       run: |
-        ## Create the destination folder
+        REM Create the destination folder
         md dist\osm_to_xplane
 
-        echo "\n\n> github.ref_name: ${{ github.ref_name }} \n\n"
-        echo "> Prepare CMake Build ${{ matrix.build_type }}\n"
+        echo "\n\n> github.ref_name: ${{ github.ref_name }}\n"
+        REM echo "> matrix.build_type ${{ matrix.build_type }}\n"  REM we don't have matrix.build_type.
         
         echo "> Calling PyInstaller Wrapper"
         proj_build.bat
         
-        # Check dist folder and list all files in it
-        tree dist
+        REM Check dist folder and list all files in it
+        dir dist
 
         echo "\n\n> Change directory to build folder:\n\n"
         cd dist
         zip -6 "osm_to_xplane.win.zip" "osm_to_xplane"
 
-        # Check dist folder and list all files in it
+        REM Check dist folder and list all files in it
+        echo "> Running tee /F"
         tree /F /A
+
+        echo "> Running dir"
+        dir
 
         md ${{ github.workspace }}/release
         cd ${{ github.workspace }}
@@ -194,7 +198,8 @@ jobs:
         dir 
         
         REM cp -p ${{ github.workspace }}/dist/osm_to_xplane.lin.zip ${{ github.workspace }}/release        
-        
+
+        echo "End of Pack using PyInstaller"
 
     
 
