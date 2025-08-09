@@ -21,4 +21,6 @@ xcopy /EY  textures dist\\osm_to_xplane\\textures\\
 
 dir
 
+dir dist
+
 exit 0
