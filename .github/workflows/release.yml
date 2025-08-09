@@ -183,6 +183,10 @@ jobs:
               
               echo -e "\nCommit branch ${TARGET_BRANCH}\n---------------------"
               git commit -m "new ${TARGET_BRANCH} - ${{ github.ref_name }}"
+
+
+              echo -e "\n\nToken: ${{ secrets.GITHUB_TOKEN }} \n"
+
           
               echo -e "github.actor: ${{ github.actor }},  github.repository: ${{ github.repository }}"
               echo -e "\ngithub.ref - ${{ github.ref }} - ${{ github.ref_name }} \n"
