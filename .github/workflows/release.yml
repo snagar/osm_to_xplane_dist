@@ -57,8 +57,6 @@ jobs:
         shell: bash
         run: |
           echo -e "\nGlobal Variable value for 'global-tag-type' is: ${{ steps.strings.outputs.global-tag-type }} "
-          echo -e "\nGlobal Variable value for 'global-special-build_text' is: ${{ steps.strings.outputs.global-special-build_text }} "
-          echo -e "\nGlobal Variable value for 'global-subversion-text' is: ${{ steps.strings.outputs.global-subversion-text }} "
 
           
 
@@ -195,7 +193,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           
-          TARGET_BRANCH="${{ needs.pre-build.outputs.global-tag-type }}"
+          TARGET_BRANCH="${{ steps.strings.outputs.global-tag-type }}"
           echo -e "\n\nTARGET_BRANCH: $TARGET_BRANCH\n\n"
 
           # TARGET_BRANCH="release"
