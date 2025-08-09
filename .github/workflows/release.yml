@@ -72,7 +72,8 @@ jobs:
     - name: Upload Linux Build Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: build-lin-${{ matrix.build_type }}
+        # name: build-lin-${{ matrix.build_type }}
+        name: build-lin
         path: |          
           ${{ github.workspace }}/release/*
 
@@ -124,7 +125,7 @@ jobs:
           ls -ltR ${{ steps.strings.outputs.build-output-dir }}
           
           echo "copy folders"
-          cp -rdp ./download/*.zip ${{ steps.strings.outputs.build-output-dir }}
+          cp -rdp ./download/*/*.zip ${{ steps.strings.outputs.build-output-dir }}
           
           echo -e "\n\nDisplay files after folders were coppied:\n\n"
           ls -ltR ${{ steps.strings.outputs.build-output-dir }}
