@@ -171,9 +171,7 @@ jobs:
         REM Create the destination folder
         md dist\osm_to_xplane
 
-        echo "\n\n> github.ref_name: ${{ github.ref_name }}\n"
-        REM echo "> matrix.build_type ${{ matrix.build_type }}\n"  REM we don't have matrix.build_type.
-        
+        echo "\n\n> github.ref_name: ${{ github.ref_name }}\n"        
         echo "> Calling PyInstaller Wrapper"
         proj_build.bat
 
@@ -181,11 +179,10 @@ jobs:
       shell: powershell
       run: |
         Write-Host "> Running tee /F"
-        tree /F /A
+        tree ${{ github.workspace }}\dist /F /A
                 
         Write-Host "\n\n> Change directory to build folder and Compress:\n\n"
-        cd dist
-        # zip -6 "osm_to_xplane.win.zip" "osm_to_xplane"
+        cd dist        
         Compress-Archive -Path "osm_to_xplane" -DestinationPath "osm_to_xplane.win.zip"
 
         Write-Host "End Post PyInstaller"
@@ -194,8 +191,11 @@ jobs:
     - name: Copy compressed folder into release folder
       shell: cmd
       run: |
+        dir dist
+        
         md ${{ github.workspace }}/release
-        copy /B /Y dist\*.zip ${{ github.workspace }}/release/
+        
+        copy /B /Y dist\*.zip ${{ github.workspace }}\release\
 
         tree  ${{ github.workspace }}/release /F /A
         
